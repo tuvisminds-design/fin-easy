@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Fin Easy - Main Entry Point
 Accounting Automation Bot with AI-powered ledger and journal automation
@@ -6,9 +7,15 @@ Accounting Automation Bot with AI-powered ledger and journal automation
 
 import argparse
 import sys
+import io
 from datetime import date, datetime, timedelta
 from pathlib import Path
 import os
+
+# Fix Windows console encoding for Unicode characters
+if sys.platform == 'win32':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 from database import Database
 from ai_engine import AIEngine
@@ -35,63 +42,63 @@ class FinEasyBot:
     
     def initialize(self):
         """Initialize database and default accounts"""
-        print("🚀 Initializing Fin Easy...")
+        print("[*] Initializing Fin Easy...")
         self.db.create_tables()
         self.db.initialize_default_accounts()
-        print("✅ Fin Easy initialized successfully!")
+        print("[OK] Fin Easy initialized successfully!")
     
     def import_csv(self, csv_path: str, source: str = 'bank'):
         """Import transactions from CSV"""
-        print(f"📥 Importing transactions from {csv_path}...")
+        print(f"[*] Importing transactions from {csv_path}...")
         transactions = self.data_ingestion.import_from_csv(csv_path, source)
         if transactions:
             self.data_ingestion.save_raw_transactions(transactions)
-            print(f"✅ Imported {len(transactions)} transactions")
+            print(f"[OK] Imported {len(transactions)} transactions")
         return transactions
     
     def import_excel(self, excel_path: str, source: str = 'bank'):
         """Import transactions from Excel"""
-        print(f"📥 Importing transactions from {excel_path}...")
+        print(f"[*] Importing transactions from {excel_path}...")
         transactions = self.data_ingestion.import_from_excel(excel_path, source)
         if transactions:
             self.data_ingestion.save_raw_transactions(transactions)
-            print(f"✅ Imported {len(transactions)} transactions")
+            print(f"[OK] Imported {len(transactions)} transactions")
         return transactions
     
     def import_image(self, image_path: str, source: str = 'receipt'):
         """Import transaction from image using OCR"""
-        print(f"📷 Processing image with OCR: {image_path}...")
+        print(f"[*] Processing image with OCR: {image_path}...")
         transaction = self.data_ingestion.import_from_image(image_path, source)
         if transaction:
             transactions = [transaction]
             self.data_ingestion.save_raw_transactions(transactions)
-            print("✅ Transaction extracted from image")
+            print("[OK] Transaction extracted from image")
         return transaction
     
     def import_pdf(self, pdf_path: str, source: str = 'invoice'):
         """Import transactions from PDF"""
-        print(f"📄 Processing PDF: {pdf_path}...")
+        print(f"[*] Processing PDF: {pdf_path}...")
         transactions = self.data_ingestion.import_from_pdf(pdf_path, source)
         if transactions:
             self.data_ingestion.save_raw_transactions(transactions)
-            print(f"✅ Extracted {len(transactions)} transaction(s) from PDF")
+            print(f"[OK] Extracted {len(transactions)} transaction(s) from PDF")
         return transactions
     
     def process_transactions(self, limit: int = None):
         """Process pending transactions and generate journal entries"""
-        print("🔄 Processing pending transactions...")
+        print("[*] Processing pending transactions...")
         results = self.journal_generator.process_pending_transactions(limit)
-        print(f"✅ Processed {len(results)} transactions")
+        print(f"[OK] Processed {len(results)} transactions")
         return results
     
     def monitor_accounts(self):
         """Monitor all key accounts"""
-        print("🔍 Monitoring key accounts...")
+        print("[*] Monitoring key accounts...")
         results = self.account_monitor.monitor_all_key_accounts()
         
         # Print summary
         for result in results:
-            status_icon = "✅" if result.get('status') == 'pass' else "⚠️" if result.get('status') == 'warning' else "❌"
+            status_icon = "[OK]" if result.get('status') == 'pass' else "[WARN]" if result.get('status') == 'warning' else "[FAIL]"
             check_type = result.get('check_type', 'unknown')
             account_code = result.get('account_code', 'N/A')
             print(f"{status_icon} {check_type.upper()} - Account {account_code}: {result.get('status', 'unknown')}")
@@ -100,7 +107,7 @@ class FinEasyBot:
     
     def generate_trial_balance(self):
         """Generate trial balance"""
-        print("📊 Generating trial balance...")
+        print("[*] Generating trial balance...")
         report = self.reporting_engine.generate_trial_balance()
         self._print_report(report)
         return report
@@ -112,7 +119,7 @@ class FinEasyBot:
         if not end_date:
             end_date = date.today()
         
-        print(f"📊 Generating income statement ({start_date} to {end_date})...")
+        print(f"[*] Generating income statement ({start_date} to {end_date})...")
         report = self.reporting_engine.generate_income_statement(start_date, end_date)
         self._print_report(report)
         return report
@@ -122,7 +129,7 @@ class FinEasyBot:
         if not as_of_date:
             as_of_date = date.today()
         
-        print(f"📊 Generating balance sheet (as of {as_of_date})...")
+        print(f"[*] Generating balance sheet (as of {as_of_date})...")
         report = self.reporting_engine.generate_balance_sheet(as_of_date)
         self._print_report(report)
         return report
@@ -149,14 +156,14 @@ class FinEasyBot:
             print(f"Total Liabilities: ${report['total_liabilities']:,.2f}")
             print(f"Total Equity: ${report['total_equity']:,.2f}")
             if 'is_balanced' in report:
-                status = "✅ Balanced" if report['is_balanced'] else "❌ Not Balanced"
+                status = "[OK] Balanced" if report['is_balanced'] else "[FAIL] Not Balanced"
                 print(f"Accounting Equation: {status}")
         
         if 'total_debits' in report:
             print(f"\nTotal Debits: ${report['total_debits']:,.2f}")
             print(f"Total Credits: ${report['total_credits']:,.2f}")
             if 'is_balanced' in report:
-                status = "✅ Balanced" if report['is_balanced'] else "❌ Not Balanced"
+                status = "[OK] Balanced" if report['is_balanced'] else "[FAIL] Not Balanced"
                 print(f"Trial Balance: {status}")
         
         print("="*60 + "\n")
@@ -232,7 +239,7 @@ def main():
                 bot.generate_balance_sheet(as_of)
     
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"[ERROR] Error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
@@ -240,4 +247,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 

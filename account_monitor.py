@@ -214,7 +214,7 @@ class AccountMonitor:
         results = []
         
         for account_name, account_code in self.KEY_ACCOUNTS.items():
-            print(f"🔍 Checking {account_name} ({account_code})...")
+            print(f"[*] Checking {account_name} ({account_code})...")
             
             # Balance check
             balance_result = self.check_account_balance(account_code)
@@ -264,4 +264,5 @@ class AccountMonitor:
         
         finally:
             session.close()
+
 

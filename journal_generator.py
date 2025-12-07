@@ -113,6 +113,8 @@ class JournalGenerator:
             )
             
             # Mark raw transaction as processed
+            # Refresh journal_entry to ensure it's bound to session
+            session.refresh(journal_entry)
             raw_transaction.processed = True
             raw_transaction.journal_entry_id = journal_entry.id
             raw_transaction.account_id = account.id
@@ -225,4 +227,5 @@ class JournalGenerator:
         
         finally:
             session.close()
+
 

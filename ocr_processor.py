@@ -232,3 +232,4 @@ class OCRProcessor:
             results.append(result)
         return results
 
+

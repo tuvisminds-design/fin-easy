@@ -3,7 +3,7 @@ Fin Easy - Database Models and Schema
 Handles all database operations for accounts, transactions, and journal entries
 """
 
-from sqlalchemy import create_engine, Column, Integer, String, Date, Decimal, Boolean, ForeignKey, Text, TIMESTAMP
+from sqlalchemy import create_engine, Column, Integer, String, Date, Numeric, Boolean, ForeignKey, Text, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
@@ -25,7 +25,7 @@ class Account(Base):
     account_name = Column(String(200), nullable=False)
     account_type = Column(String(50), nullable=False)  # Asset, Liability, Equity, Revenue, Expense
     parent_account_id = Column(Integer, ForeignKey('accounts.id'), nullable=True)
-    balance = Column(Decimal(15, 2), default=0.00)
+    balance = Column(Numeric(15, 2), default=0.00)
     created_at = Column(TIMESTAMP, default=datetime.utcnow)
     
     # Relationships
@@ -61,8 +61,8 @@ class TransactionLine(Base):
     id = Column(Integer, primary_key=True)
     journal_entry_id = Column(Integer, ForeignKey('journal_entries.id'), nullable=False)
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=False)
-    debit_amount = Column(Decimal(15, 2), default=0.00)
-    credit_amount = Column(Decimal(15, 2), default=0.00)
+    debit_amount = Column(Numeric(15, 2), default=0.00)
+    credit_amount = Column(Numeric(15, 2), default=0.00)
     description = Column(Text)
     
     # Relationships
@@ -80,7 +80,7 @@ class RawTransaction(Base):
     id = Column(Integer, primary_key=True)
     source = Column(String(50), nullable=False)  # 'bank', 'credit_card', 'manual', etc.
     transaction_date = Column(Date, nullable=False)
-    amount = Column(Decimal(15, 2), nullable=False)
+    amount = Column(Numeric(15, 2), nullable=False)
     description = Column(Text)
     category = Column(String(100))  # AI-determined
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=True)  # AI-assigned
@@ -190,4 +190,5 @@ class Database:
             print(f"❌ Error initializing accounts: {e}")
         finally:
             session.close()
+
 

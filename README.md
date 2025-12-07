@@ -227,3 +227,4 @@ For issues and questions, please open an issue on GitHub.
 
 **Fin Easy** - Making accounting automation easy! 🚀
 
+

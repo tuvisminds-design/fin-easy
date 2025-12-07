@@ -319,3 +319,4 @@ class DataIngestion:
         finally:
             session.close()
 
+
